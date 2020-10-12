@@ -66,10 +66,10 @@ class Map extends Component {
 
   render() {
 
-    console.log("GOOGLE MAP PRO " ,this.props)
+    console.log("for gitup respositery " ,this.props)
     let markers=this.props.onlineTraffic
     
-    this.props.onlineTraffic.map(i=>console.log("sura",i))
+    // this.props.onlineTraffic.map(i=>console.log("sura",i))
     return (
 
       <GoogleMap
