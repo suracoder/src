@@ -58,7 +58,9 @@ class Map extends Component {
 
   componentDidMount() {
     this.getData()
-
+this.context.on("updatelocation",data=>{
+  console.log("locatin changed")
+})
 
   }
 
