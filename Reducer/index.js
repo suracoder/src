@@ -27,6 +27,9 @@ import weredaTraffic from './getWeredaTraffic'
  import zoneData from "./getZone"
  import weredaData from "./getWereda"
  import liveTraffic from "./getLiveTraffic"
+ import getHospital from "./createHospital"
+ import getAccident from "./getAccident"
+ import getProfile from "./getProfile" 
 const reducers=combineReducers({
    usersign:userSignIn,
    deletRegionManeger:deletRegionManeger,
@@ -55,6 +58,9 @@ const reducers=combineReducers({
    regionEmployee,
    zoneData,
    weredaData,
-   liveTraffic
+   liveTraffic,
+   getHospital,
+   getAccident,
+   getProfile
 })
 export default reducers;

@@ -1,0 +1,1 @@
+export const imge_ip="http://localhost:3333/uploads/"

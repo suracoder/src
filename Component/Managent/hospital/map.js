@@ -2,14 +2,12 @@ import React, { useEffect, useState, useContext, Component } from "react"
 import { compose, withProps } from "recompose"
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow ,Polygon} from "react-google-maps"
 import axios from "axios"
-import SocketContext from './SocketContext'
+
 import { useSnackbar } from 'notistack';
-import { getZoneData } from "../Action"
-import MarkerDetail from "./markerDetail"
-import InfoMarker from "./info"
-import Chat from "./chat"
+ 
+ 
 import { useSelector, useDispatch, connect } from 'react-redux';
-import {fetchLiveTraffic}  from "../Action/index"
+ 
 class Map extends Component {
 
   constructor() {
@@ -23,68 +21,31 @@ class Map extends Component {
 
   }
 
-  // for socket context
-  static contextType = SocketContext;
-
-  handleToggleOpen = (markerId) => {
-
-    this.setState({
-      openInfoWindowMarkerId: markerId
-    });
-    this.setState({
-      isOpen: true
-    });
-  }
-
-  handleToggleClose = () => {
-    console.log("window closed")
-    this.setState({
-      isOpen: false
-    });
-  }
-
-  getData = () => {
-    this.context.on("updatelocation", (data) => {
-      this.props.onLocationChange()
-      // let array = this.state.markers
-      // let markerss = array.filter(function (i) {
-        // console.log("fillter map ", i)
-        // return i.userId !== data.userId;
-      // });
-      // this.setState({ markers: [...markerss, data] });
-    })
-  }
-
+ 
+ 
+ 
 
   componentDidMount() {
-    this.getData()
-this.context.on("updatelocation",data=>{
-  console.log("locatin changed")
-})
-
+   
   }
 
 
 
   render() {
 
-    console.log("for gitup respositery " ,this.props)
-    let markers=this.props.onlineTraffic
-    
+     
     // this.props.onlineTraffic.map(i=>console.log("sura",i))
     return (
 
       <GoogleMap
-      onClick={(e)=>console.log(e.latLng.lat())}
+      onClick={
+        (e) =>{this.props.onMapClick(e.latLng.lat(),e.latLng.lng())
+            // this.props.onMapClick(e.latLng.lat(),e.latLng.lng())
+        }
+    }
         defaultCenter={{ lat: 7.013191, lng: 39.9746573 }}
         defaultZoom={10}>
-        {
-          markers.map((i) => {
-            console.log("my marker", i)
-
-            return <InfoMarker {...i} />
-          })
-        }
+      
 
  
       </GoogleMap>
@@ -95,27 +56,25 @@ this.context.on("updatelocation",data=>{
 const WrappedMap = withScriptjs(withGoogleMap(Map));
 
   function MyMapComponent(props) {
+    console.log('yuyuyu',props)
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <WrappedMap
+    
         googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCGg3Vu4KpU7566Ghc-CqJy0pYR4Fhfa-A&v=3.exp&libraries=geometry,drawing,places"
         loadingElement={<div style={{ height: `100%` }} />}
         containerElement={<div style={{ height: `100%` }} />}
         mapElement={<div style={{ height: `100%` }} />}
-        {...props.liveTraffic}
+        onMapClick={props.onLocationInput}
 
-      onLocationChange={props.newTrafficLocaation}
+ 
       />
     </div>
   )
 }
-const mapStateToProps = state => ({
-  liveTraffic: state.liveTraffic
-})
-const mapDispatchToProps = dispatch => ({
-    newTrafficLocaation: () => dispatch(fetchLiveTraffic())
-})
-export default connect(mapStateToProps, mapDispatchToProps)(MyMapComponent);
+ 
+ 
+export default  MyMapComponent;
 
 {/* <Marker
           onClick={() => this.handleToggleOpen(i.userId)}

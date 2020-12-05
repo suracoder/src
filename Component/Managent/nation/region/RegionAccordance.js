@@ -86,7 +86,7 @@ const defaultProps = {
     const mynewArray = [];
     const mynewArray1 = [];
   
-  
+   console.log("REGION DATA FOR ID",props.regionData)
   
     for (var i in props.userPermission.permission.data) {
   

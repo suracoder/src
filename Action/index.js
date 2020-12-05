@@ -78,9 +78,17 @@ import {
     MAKE_NULL_WT,
     MAKE_NULL_WE,
     GET_WEREDA,
-    MAKE_NULL_W ,
-     GET_LIVE_TRAFFIC,
-
+    MAKE_NULL_W,
+    GET_LIVE_TRAFFIC,
+    HOSPITAL_REG_SUCCESS,
+    HOSPITAL_REG_ERROR,
+    MAKE_H_SPINNER,
+    RECEIV_H,
+    FORM_H_SENDCONFIRM,
+    CREATE_HOSPITAL,
+    RESET_HOSPITAL,
+    GET_ACCIDENT,
+    GET_PROFILE
 
 } from "./type"
 axios.interceptors.request.use(
@@ -89,35 +97,218 @@ axios.interceptors.request.use(
         return config
     }
 )
-const ip = '192.168.1.15'
+const ip = 'localhost'
 
-
-//  get live traffic postion with phone configration
-
-export const setLiveTrafficData=(data,error)=>{
-    return{
-        type:GET_LIVE_TRAFFIC,
-          data,
-          error
+export const setProfile =(profile,error)=>{
+    return {
+        type: GET_PROFILE,
+       profile,
+        error
     }
 }
-export const fetchLiveTraffic=()=>{
+export const fetchProfile = () => {
     return (dispatch) => {
-      
 
-
-        return axios.get(`http://${ip}:3333/api/traffic/getLiveTraffic`).
+ 
+        return axios.get(`http://${ip}:3333/api/user/getProfile`).
             then(response => {
 
-                dispatch(setLiveTrafficData(response.data,null))
+                // dispatch(setAccidnet(response.data, null))
+                dispatch(setProfile(response.data,null ))
 
             }
             ).
             catch(error => {
 
-                dispatch(setLiveTrafficData(null,error))
+                dispatch(setAccidnet([],error.message))
             });
-    }    
+    }
+}
+export const setAccidnet = (success,
+    aData,
+    isLoading,
+    error) => {
+    return {
+        type: GET_ACCIDENT,
+        success,
+        aData,
+        isLoading,
+        error
+    }
+}
+export const fetchAccidnet = () => {
+    return (dispatch) => {
+
+
+dispatch(setAccidnet(null,[],true,null))
+        return axios.get(`http://${ip}:3333/api/accident/getAccidnetByZoneId`).
+            then(response => {
+
+                // dispatch(setAccidnet(response.data, null))
+                dispatch(setAccidnet(true,response.data,false,null))
+
+            }
+            ).
+            catch(error => {
+
+                dispatch(setAccidnet(false,[],false,error.message))
+            });
+    }
+}
+export const resetHospital = (success, rData, isLoading, error) => {
+    return {
+        type: RESET_HOSPITAL,
+        success,
+        rData,
+        isLoading,
+        error
+    }
+}
+export const setHospital = (success, rData, isLoading, error) => {
+    return {
+        type: CREATE_HOSPITAL,
+        success,
+        rData,
+        isLoading,
+        error
+    }
+}
+export const createHospital = (name, type, phone_no, lat, lng, firstName, lastName, email, password, userAddress) => {
+
+    return (dispatch) => {
+
+        let params = {
+            name: name,
+            type: type,
+            phone_no,
+            lat,
+            lng,
+            firstName: firstName,
+            lastName: lastName,
+
+            email: email,
+            password: password,
+            userAddress: userAddress
+        }
+        dispatch(setHospital(null, null, true, null));
+
+        return axios.post(`http://${ip}:3333/api/hospital/createHospitalAccountByZone`, params).
+            then(response => {
+                // console.log("this is", response)
+
+                if (response.data.hasOwnProperty("success")) {
+                    console.log(response.data)
+                    dispatch(setHospital(true, response.data, false, false));
+
+                }
+
+                // response data hava invalid data
+                if (response.data.hasOwnProperty("error")) {
+                    console.log("rrrrr", response.data)
+                    dispatch(setHospital(false, null, false, response.data));
+
+
+                }
+            }).
+            catch(error => {
+                console.log("dddd", error)
+                dispatch(setHospital(false, null, false, error.message));
+
+            });
+    }
+}
+export const hospitalReg = (isRegister) => {
+    console.log("dgfgfgdf")
+    return {
+        type: HOSPITAL_REG_SUCCESS,
+        isRegister
+    }
+}
+export const make_h_spinner = (isLoading) => {
+    return {
+        type: MAKE_H_SPINNER,
+        isLoading
+    }
+}
+export const getHospitalData = (hospita) => {
+    return {
+        type: RECEIV_H,
+        hospita
+    }
+}
+export const form_h_SendConfirm = (confirm) => {
+    return {
+        type: FORM_H_SENDCONFIRM,
+        confirm
+    }
+}
+// api call for wereda employee
+export const createHospitals = (firstName, lastName, email, password, userAddress) => {
+
+    return (dispatch) => {
+
+        let params = {
+            firstName: firstName,
+            lastName: lastName,
+
+            email: email,
+            password: password,
+            userAddress: userAddress
+        }
+        dispatch(make_h_spinner(true));
+
+        return axios.post(`http://${ip}:3333/api/hospital/createHospitalAccountByZone`, params).
+            then(response => {
+                console.log("this is", response)
+
+                if (response.data.hasOwnProperty("success")) {
+                    console.log(response.data)
+
+                    dispatch(hospitalReg(true))
+                    dispatch(make_h_spinner(false));
+                    dispatch(getHospitalData(response.data.user))
+                }
+
+                // response data hava invalid data
+                if (response.data.hasOwnProperty("error")) {
+                    dispatch(make_h_spinner(false));
+                    dispatch(hospitalReg(false));
+
+                }
+            }).
+            catch(error => {
+
+                dispatch(hospitalReg(false));
+                // dispatch(make_w__spinner(false));
+            });
+    }
+}
+//  get live traffic postion with phone configration
+
+export const setLiveTrafficData = (data, error) => {
+    return {
+        type: GET_LIVE_TRAFFIC,
+        data,
+        error
+    }
+}
+export const fetchLiveTraffic = () => {
+    return (dispatch) => {
+
+
+
+        return axios.get(`http://${ip}:3333/api/traffic/getLiveTraffic`).
+            then(response => {
+
+                dispatch(setLiveTrafficData(response.data, null))
+
+            }
+            ).
+            catch(error => {
+
+                dispatch(setLiveTrafficData(null, error))
+            });
+    }
 }
 
 // end
@@ -155,7 +346,7 @@ export const sendMessageToApi = (message, receiverId) => {
 
                 dispatch(messageSendError(error.message));
             });
-    }    
+    }
 }
 //@@@@@@@@@@@@ END SEND MESSAGE @@@@@@@@@@
 // @@@@@@@@@@@@@@@@ get chat Conversaion actions @@@@@@@@@@@
@@ -991,10 +1182,10 @@ export const fetchRegionManager = () => {
 }
 
 // get wereda employee with wereda name 
-export const makeNullWeredaEmployee=()=>{
+export const makeNullWeredaEmployee = () => {
     return {
         type: MAKE_NULL_WE,
-       
+
     }
 }
 export const getWeredaEmployee = (data) => {
@@ -1012,7 +1203,7 @@ export const fetchWeredaEmployee = (name) => {
     }
     return (dispatch) => {
 
-        return axios.post(`http://${ip}:3333/api/wereda/getWeredaEmployee`, params).
+        return axios.get(`http://${ip}:3333/api/wereda/getWeredaEmployee`, params).
             then(response => {
 
                 console.log("region manager row :", response.data[0])
@@ -1027,11 +1218,11 @@ export const fetchWeredaEmployee = (name) => {
 
 }
 // get wereada  traffic
-export const makeNullWeredaTraffic=()=>{
-    
+export const makeNullWeredaTraffic = () => {
+
     return {
         type: MAKE_NULL_WT,
-       
+
     }
 }
 export const getWeredaTraffic = (data) => {
@@ -1065,10 +1256,10 @@ export const fetchWeredaTraffic = (name) => {
 }
 
 // get all zone employee with zone name \
-export const makeNullZoneEmployee=()=>{
+export const makeNullZoneEmployee = () => {
     return {
         type: MAKE_NULL_ZE,
-       
+
     }
 }
 export const getZoneEmployee = (data) => {
@@ -1102,10 +1293,10 @@ export const fetchZoneEmployee = (name) => {
 
 }
 // get zone traffic 
-export const makeNullZoneTraffic=()=>{
+export const makeNullZoneTraffic = () => {
     return {
         type: MAKE_NULL_ZT,
-       
+
     }
 }
 export const getZoneTraffic = (data) => {
@@ -1255,7 +1446,7 @@ export const fetchWereda = () => {
         return axios.post(`http://${ip}:3333/api/wereda/getWereda`).
             then(response => {
 
-                
+
 
                 dispatch(get_wereda(response.data))
             }

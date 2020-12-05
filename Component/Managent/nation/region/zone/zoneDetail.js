@@ -107,7 +107,7 @@ class ZoneDetail extends React.Component {
                         {/* </Paper> */}
                     </Grid>
                     <Grid style={{ position: 'relative', height: '60vh' }} item xs={9} >
-                        <Map />
+                        {/* <Map /> */}
                     </Grid>
                     <Grid item xs={9} >
                         <SurafelTable {...innerValue} />

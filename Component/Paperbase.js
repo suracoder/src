@@ -22,10 +22,13 @@ import Wereda from "./Managent/zone/wereda/wereda"
 import WeredaEmployee from "./Managent/wereda/weredaEmployee/weredaEmployee"
 import WeredaTraffic from "./Managent/wereda/weredaTraffic/weredaTraffic"
 import socketIOClient from "socket.io-client";
+import Hospital from "./Managent/hospital/HospitalMain"
+import AccidentDetail from "./Accidnet/AccidentDetail"
 import {
   fetchSignIn, fetchPermission, signOut, fetchRegion,
   fetchRegionManager, fetchOnlineUser,
-  fetchRealPermission,fetchLiveTraffic
+  fetchRealPermission, fetchLiveTraffic,
+  fetchAccidnet, fetchProfile
 } from '../Action/index';
 import { useSelector, useDispatch, connect } from 'react-redux';
 import SocketContext from './SocketContext'
@@ -40,6 +43,7 @@ import ZoneEmployeeProfile from './profile/ZoneEmployeeProfile/profile'
 import ZoneTrafficProfile from './profile/ZoneTrafficProfile/profile'
 import WeredaEmployeeProfile from './profile/WeredaEmployeeProfile/profile'
 import WeredaTrafficProfile from './profile/WeredaTrafficProfile/profile'
+import Accident from "../Component/Accidnet/AccidnetMain"
 import Profile from "./profile"
 import {
   BrowserRouter,
@@ -225,6 +229,8 @@ function Paperbase(props) {
   dispatch(fetchRegionManager())
   dispatch(fetchOnlineUser())
   dispatch(fetchLiveTraffic())
+  dispatch(fetchAccidnet())
+  dispatch(fetchProfile())
   socket.on('chatting', function (data) {
     console.log("@Chating emit ")
     enqueueSnackbar("new message");
@@ -322,7 +328,10 @@ function Paperbase(props) {
 
                   return <WeredaTrafficProfile />
                 }} />
+                <Route exact path={`/accident_detail/:id`} render={() => {
 
+                  return <AccidentDetail />
+                }} />
 
                 <Route path="/regionEmployee" render={() => {
 
@@ -360,7 +369,14 @@ function Paperbase(props) {
 
                   return <ChatUi />
                 }} />
+                <Route path="/hospital" render={() => {
 
+                  return <Hospital />
+                }} />
+                <Route path="/accident" render={() => {
+
+                  return <Accident />
+                }} />
               </Switch>
 
             </div>

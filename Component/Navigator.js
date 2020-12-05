@@ -28,6 +28,8 @@ import ExpandMore from '../icon/src/ExpandMore';
 import StarBorder from '../icon/src/StarBorder';
 import Collapse from '@material-ui/core/Collapse';
 import UserContext, {UserProvider } from "./PermissionContext"
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
 
 import { fetchRegionManager } from '../Action/index';
 import {
@@ -39,6 +41,7 @@ import {
   useHistory,
   useLocation
 } from "react-router-dom";
+import {imge_ip} from "../ip"
 
 
 const styles = (theme) => ({
@@ -107,15 +110,22 @@ class Navigator extends React.Component {
     const token = localStorage.getItem("token")
     const encoded = jwt.decode(token)
 
+let image=null
+let name=null
+this.props.getProfile.profile.map(i=>{
+image=imge_ip+i.profile_picture
+name=i.firstName+"  "+i.lastName
+})
+console.log('|||||||||||||||||||||||||||||||||||||||||',image)
     var listArray = [];
-    console.log("to get permission:", this.props.userPermission.permission)
+    
 
     for (var i in this.props.userPermission.permission.data) {
 
 
 
       this.props.userPermission.permission.data[i].map((o) => {
-
+ 
         mynewArray.push(o["roleName"])
         var nation = o["roleName"].includes("nation");
         var region = o["roleName"].includes("region");
@@ -123,6 +133,9 @@ class Navigator extends React.Component {
         var wereda = o["roleName"].includes("wereda");
         var role = o["roleName"].includes("role");
         var user = o["roleName"].includes("user");
+        var hospital = o["roleName"].includes("hospital");
+        var accident = o["roleName"].includes("accident");
+       
         if (nation) {
 
           listArray.push("nation")
@@ -142,18 +155,23 @@ class Navigator extends React.Component {
         if (user) {
           listArray.push("user")
         }
+        if (hospital) {
+          listArray.push("hospital")
+        }
+        if(accident){
+   
+          listArray.push("accident")
+        }
         mynewArray1.push(o)
         const surafel = Object.entries(o)
         //  console.log("surafe",surafel)
       })
     }
     let unique = [...new Set(listArray)];
-    console.log("my unique componetn ", unique)
-    console.log(typeof unique)
-    console.log("class componet ", mynewArray1[0])
+     
   
-    console.log("encoded for wereda ", encoded.wid)
-    
+  console.log(this.props.getAccident.aData)
+//  let image=imge_ip+thi
 
     return (
       
@@ -163,19 +181,15 @@ class Navigator extends React.Component {
 
             Eth Traffic
         </ListItem>
-          <ListItem className={clsx(classes.item, classes.itemCategory)}>
-            <ListItemIcon className={classes.itemIcon}>
-              <HomeIcon />
-            </ListItemIcon>
+          
             
-            <ListItemText
-              classes={{
-                primary: classes.itemPrimary,
-              }}
-            >
-              Project Overview
-          </ListItemText>
-          </ListItem>
+            
+            <Avatar src={image} />
+
+            <Typography variant="h5" gutterBottom>
+        {name}
+      </Typography>
+            
           <ListItem className={clsx(classes.item, classes.itemCategory)}>
             <ListItemIcon className={classes.itemIcon}>
               <HomeIcon />
@@ -194,7 +208,7 @@ class Navigator extends React.Component {
               component="nav"
             >
               {unique.map(i => {
-         
+         console.log("NEw PERMISON STAGTE ",i)
                 return <div>
                   <React.Fragment key="Management">
 
@@ -245,7 +259,7 @@ class Navigator extends React.Component {
 
                         </List> : <div />}
 
-                      { i === "region"&&encoded.userType === 3||encoded.userType ===4?
+                      { i === "region"&&(encoded.userType === 3||encoded.userType ===4)?
 
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i + "Employee"}>
@@ -255,7 +269,7 @@ class Navigator extends React.Component {
 
                         </List> : <div />}
 
-                      {i === "zone"&& encoded.userType === 3 ||  encoded.userTyp === 4 ?
+                      {i === "zone"&&( encoded.userType === 3 ||  encoded.userTyp === 4 )?
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i} >
                             <ListItemText primary="zone" className={clsx(classes.itemNeastedItem)} />
@@ -263,7 +277,7 @@ class Navigator extends React.Component {
 
                         </List> : <div />
                       }
-                      { (i === "zone"&&encoded.userType === 3||encoded.userType === 4) ?
+                      { (i === "zone"&&(encoded.userType === 3||encoded.userType === 4)) ?
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i + "Manager"} >
                             <ListItemText primary="zone manager" className={clsx(classes.itemNeastedItem)} />
@@ -304,18 +318,34 @@ class Navigator extends React.Component {
 
                         </List> : <div />
                       }
-                      { i == "wereda" &&encoded.userType=== 6 || encoded.userType===7 ||encoded.userType===8 ?
+                      { i ==="wereda" &&(encoded.userType=== 6 || encoded.userType===7 ||encoded.userType===8 )?
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i + "Employee"} >
                             <ListItemText primary="wereda employee" className={clsx(classes.itemNeastedItem)} />
                           </ListItem>
-
+x
                         </List> : <div />
                       }
-                      {i == "wereda" &&encoded.userType=== 6 || encoded.userType===7 ||encoded.userType===8 ?
+                      {i == "wereda" &&(encoded.userType=== 6 || encoded.userType===7 ||encoded.userType===8) ?
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i + "Traffic"} >
                             <ListItemText primary="wereda traffic" className={clsx(classes.itemNeastedItem)} />
+                          </ListItem>
+
+                        </List> : <div />
+                      }
+                      {i == "hospital" &&(encoded.userType=== 5 ||encoded.userType=== 6 || encoded.userType===7 ||encoded.userType===8||encoded.userType===9)?
+                        <List component="div" disablePadding>
+                          <ListItem button component={Link} to={"/" + i} >
+                            <ListItemText primary="Manage Hospital" className={clsx(classes.itemNeastedItem)} />
+                          </ListItem>
+
+                        </List> : <div />
+                      }
+                      {i === "accident" &&(encoded.userType=== 5 ||encoded.userType=== 6 || encoded.userType===7 ||encoded.userType===8||encoded.userType===9)?
+                        <List component="div" disablePadding>
+                          <ListItem button component={Link} to={"/" + i} >
+                            <ListItemText primary="Manage accidnet" className={clsx(classes.itemNeastedItem)} />
                           </ListItem>
 
                         </List> : <div />
@@ -327,7 +357,7 @@ class Navigator extends React.Component {
                   </React.Fragment>
                 </div>
               })}
- <ListItem
+ {/* <ListItem
                       // key={childId}
                       button
                       className={classes.itemCategory} button
@@ -343,7 +373,7 @@ class Navigator extends React.Component {
                         {i}
                       </ListItemText>
                       {this.state[i] ? <ExpandLess /> : <ExpandMore />}
-                    </ListItem>
+                    </ListItem> */}
 
             </List>
           </div>
@@ -360,7 +390,9 @@ Navigator.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 const mapStateToProps = state => ({
-  userPermission: state.userPermission
+  userPermission: state.userPermission,
+  getAccident:state.getAccident,
+  getProfile:state.getProfile
 })
 const mapDispatchToProps = dispatch => ({
   fetch_r_m: () => dispatch(fetchRegionManager())

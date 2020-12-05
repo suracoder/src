@@ -125,3 +125,4 @@ const mapStateToProps=state=>({
   usersign:state.usersign
 });
 export default connect(mapStateToProps)(lifecycle(methods)(AuthExample));
+

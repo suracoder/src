@@ -16,6 +16,7 @@ import {Redirect,useHistory, useLocation, useParams ,useRouteMatch } from "react
 import ManagerProfile from "../../managerProfile"
 import Map from "../../../map"
 import RegionEmployee from "./regionemployee"
+import jwt from "jsonwebtoken";
 
 const useStyles = makeStyles((theme) => ({
   
@@ -32,29 +33,50 @@ function handleClick(event) {
 function RegionDetail(props){
   const dispatch=useDispatch()
 let history=useHistory()
+let { name } = useParams();
+
 const [spacing, setSpacing] = React.useState(2);
 const classes = useStyles();
-
+const token = localStorage.getItem("token")
+const encoded = jwt.decode(token)
+var foundValue = props.regionData.region.filter( obj=>obj.name===name);
     let { path, url } = useRouteMatch();
-    let { name } = useParams();
     // console.log("region detail ",history)
 
 
     useEffect(()=>{
       dispatch(fetchRegionEmployee(name))
     })
-    console.log("route name ",useParams())
+    const live=props.liveTraffic.onlineTraffic
+  // let result = live.find( (i ) => i.rid ==id );
+    // console.log("live ",result )
     console.log("region detail ",props.regionData.region)
+    let id
+    console.log("found unkown ",foundValue[0])
+    if(foundValue[0]!==undefined){
+      id=foundValue[0].id
+    }
+    // let id=foundValue[0].id
+    let trafficOnThis=[]
+  live.map(i=>{
+    if(i.rid==id){
+      trafficOnThis.push(i)
+    }
+  })
+    // result = liver.map(id => arrObj.find(o => o.id === id).name);
     let innerValue=[];
     let managerProfile={}
-    var foundValue = props.regionData.region.filter( obj=>obj.name===name);
+    
+  
+  console.log("ONLINE LIVE TRAFFIC",trafficOnThis)
+
     foundValue.map((i)=>{
    
       innerValue=i;
       if(i.regionManager!==null){
       managerProfile={
         name:`${i.regionManager.user.firstName}  ${i.regionManager.user.lastName}`,
-        image:'https://placeimg.com/640/480/people',
+        image:'https://cdn.vocab.com/units/jcmqdia6/feature.png?width=500&v=17522072455',
         id:i.regionManager.user.id,
         role:"region Manager",
         email:i.regionManager.user.email
@@ -101,7 +123,7 @@ console.log("this inner value ", innerValue)
         <Paper className={classes.paper}>xs=6 sm=3</Paper>
       </Grid>
       <Grid item xs={6} >
-        <Paper className={classes.paper}>xs=6 sm=3</Paper>
+  <Paper className={classes.paper}>{}</Paper>
       </Grid>
      
       <Grid item xs={6} >
@@ -116,6 +138,8 @@ console.log("this inner value ", innerValue)
 }
 const mapStateToProps=state=>({
   
+    liveTraffic: state.liveTraffic,
+ 
   regionData:state.regionData
 })
 export default connect(mapStateToProps)(RegionDetail)

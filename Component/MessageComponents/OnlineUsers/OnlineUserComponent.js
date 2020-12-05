@@ -110,7 +110,7 @@ let g=null
         color="primary"
         onClick={handleClick}
       >
-        Open Menu
+        Online
       </Button>
       <StyledMenu
         id="customized-menu"
@@ -123,7 +123,7 @@ let g=null
         
         
             <Grid item xs={12} className={classes.borderRight500}>
-            <Typography variant="h6" align="center" className="header-message">online</Typography>
+            <Typography variant="h6" align="center" className="header-message"> </Typography>
                  
                 <List>
                     {
