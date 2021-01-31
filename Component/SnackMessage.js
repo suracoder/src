@@ -93,7 +93,7 @@ const SnackMessage = React.forwardRef((props, ref) => {
             
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <Paper className={classes.collapse}>
-    <Typography gutterBottom>{props.message.latitude}</Typography>
+    {/* <Typography gutterBottom>{props.message.latitude}</Typography> */}
                    
                 </Paper>
             </Collapse>

@@ -88,7 +88,16 @@ import {
     CREATE_HOSPITAL,
     RESET_HOSPITAL,
     GET_ACCIDENT,
-    GET_PROFILE
+    GET_PROFILE,
+    GET_ALL_NATION_EMPLOYEE,
+    CREATE_NATION_EMPLOYEE,
+    CREATE_REGION_MANAGER,
+    GET_ALL_REGION_EMPLOYEE,
+    CREATE_REGION_EMPLOYEE,
+    GET_ZONE_MANAGER,
+    GET_ALL_RULE,
+    CREATE_RULE
+     
 
 } from "./type"
 axios.interceptors.request.use(
@@ -679,45 +688,45 @@ export const form_r_e_SendConfirm = (confirm) => {
         confirm
     }
 }
-export const createRegionEmployee = (firstName, lastName, email, password, userAddress) => {
+// export const createRegionEmployee = (firstName, lastName, email, password, userAddress) => {
 
-    return (dispatch) => {
+//     return (dispatch) => {
 
-        let params = {
-            firstName: firstName,
-            lastName: lastName,
+//         let params = {
+//             firstName: firstName,
+//             lastName: lastName,
 
-            email: email,
-            password: password,
-            userAddress: userAddress
-        }
-        dispatch(make_r_e_spinner(true));
-        return axios.post(`http://${ip}:3333/api/region/createRegionEmp`, params).
-            then(response => {
-                console.log("this is", response)
+//             email: email,
+//             password: password,
+//             userAddress: userAddress
+//         }
+//         dispatch(make_r_e_spinner(true));
+//         return axios.post(`http://${ip}:3333/api/region/createRegionEmp`, params).
+//             then(response => {
+//                 console.log("this is", response)
 
-                if (response.data.hasOwnProperty("success")) {
-                    console.log(response.data)
+//                 if (response.data.hasOwnProperty("success")) {
+//                     console.log(response.data)
 
-                    dispatch(regionEmpReg(true))
-                    dispatch(make_r_e_spinner(false));
-                    dispatch(getRegionEmployeeData(response.data.user))
-                }
+//                     dispatch(regionEmpReg(true))
+//                     dispatch(make_r_e_spinner(false));
+//                     dispatch(getRegionEmployeeData(response.data.user))
+//                 }
 
-                // response data hava invalid data
-                if (response.data.hasOwnProperty("error")) {
-                    dispatch(make_r_e_spinner(false));
-                    dispatch(regionEmpReg(false));
+//                 // response data hava invalid data
+//                 if (response.data.hasOwnProperty("error")) {
+//                     dispatch(make_r_e_spinner(false));
+//                     dispatch(regionEmpReg(false));
 
-                }
-            }).
-            catch(error => {
+//                 }
+//             }).
+//             catch(error => {
 
-                dispatch(regionEmpReg(false));
-                dispatch(make_r_e_spinner(false));
-            });
-    }
-}
+//                 dispatch(regionEmpReg(false));
+//                 dispatch(make_r_e_spinner(false));
+//             });
+//     }
+// }
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1152,11 +1161,14 @@ export const fetchPermission = (g) => {
 
 
 }
+ 
 // region manager
-export const getRegionManager = (data) => {
+export const setRegionManager = (regionManger,isLoading,error) => {
     return {
         type: GET_REGION_MANGER,
-        data
+        regionManger,
+        isLoading,
+        error
 
     }
 }
@@ -1165,16 +1177,19 @@ export const fetchRegionManager = () => {
 
     return (dispatch) => {
 
-
+        dispatch(setRegionManager([],true,null))
         return axios.get(`http://${ip}:3333/api/nation/listAllRegionManager`).
             then(response => {
 
                 console.log("region manager row :", response.data[0])
+                dispatch(setRegionManager(response.data,false,null))
 
-                dispatch(getRegionManager(response.data))
+                 
             }
             ).catch(error => {
                 console.log(error)
+                dispatch(setRegionManager([],false,error))
+
             });
     }
 
@@ -1674,3 +1689,413 @@ export const emailValidate = (email) => {
             });
     }
 }
+
+
+
+
+// set create status of commission palne 
+export const setNationEmployee = (nationEmployee, isLoading, error) => {
+    return {
+      type: GET_ALL_NATION_EMPLOYEE,
+  
+      nationEmployee: nationEmployee,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  export const fetchNationEmployee = () => {
+
+    return (dispatch) => {
+  
+  
+      dispatch(setNationEmployee([], true, null))
+  
+      return axios.get(`http://${ip}:3333/api/nation/getAllNationEmployee`).
+        then(response => {
+  
+  let data=[]
+  response.data.map(i=>{
+      let d={
+        firstName:i.user.firstName,
+        lastName:i.user.lastName,
+        email:i.user.email,
+        nationEployeeId:i.id,
+        userId:i.userId,
+        profile_picture:i.user.profile_picture
+      }
+      data.push(d)
+  })
+          console.log("Role ", response.data)
+          dispatch(setNationEmployee(data, false, null))
+  
+  
+        }).catch(error => {
+          console.log(error)
+          alert(error)
+          dispatch(setNationEmployee([], false, error.message))
+  
+        });
+    }
+  }
+  
+  
+
+
+
+
+  
+
+// set create status of channel
+export const setCreateNationEmployee = (success, nData, isLoading, error) => {
+    return {
+      type: CREATE_NATION_EMPLOYEE,
+      success: success,
+      nData: nData,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  
+  //  create operator 
+  export const createNationEmployeee = (firstName, lastName, email, password, userAddress) => {
+    let params = {
+        firstName: firstName,
+        lastName: lastName,
+
+        email: email,
+        password: password,
+        userAddress: userAddress
+    }
+    // console.log("passed value !!!! ", data)
+    return (dispatch) => {
+  
+  
+      dispatch(setCreateNationEmployee(null, [], true, null))
+      console.log("dispacje omsdcsdncojdsnciods")
+      return axios.post(`http://${ip}:3333/api/nation/createNationEmp`, params, {
+        // headers: { "Content-type": "multipart/form-data" }
+      }).then(response => {
+  
+        if (response.data.hasOwnProperty("error")) {
+          console.log(response.data.error)
+  
+          dispatch(setCreateNationEmployee(false, [], false, response.data))
+        } else {
+          dispatch(setCreateNationEmployee(true, response.data, false, null))
+  
+        }
+        //  console.log("oprator ",response.data)
+        //  dispatch(setOperator(response.data, false,null))
+  
+  
+      }).catch(error => {
+        dispatch(setCreateNationEmployee(true, [], false, error))
+        console.log("error ", error.message)
+        // dispatch(setOperator([], false, error.message))
+  
+      });
+    }
+  }
+  
+  
+  
+
+
+
+
+  // set create status of channel
+export const setCreateRegionManager = (success, nData, isLoading, error) => {
+    return {
+      type: CREATE_REGION_MANAGER,
+      success: success,
+      nData: nData,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  
+  //  create operator 
+  export const createReg = (firstName, lastName, email, password, userAddress,regionId) => {
+    let params = {
+        firstName: firstName,
+        lastName: lastName,
+
+        email: email,
+        password: password,
+        userAddress: userAddress,
+        regionId:regionId
+    }
+    // console.log("passed value !!!! ", data)
+    return (dispatch) => {
+  
+  
+      dispatch(setCreateRegionManager(null, [], true, null))
+      console.log("dispacje omsdcsdncojdsnciods")
+      return axios.post(`http://${ip}:3333/api/nation/createNationEmp`, params, {
+        // headers: { "Content-type": "multipart/form-data" }
+      }).then(response => {
+  
+        if (response.data.hasOwnProperty("error")) {
+          console.log(response.data.error)
+  
+          dispatch(setCreateRegionManager(false, [], false, response.data))
+        } else {
+          dispatch(setCreateRegionManager(true, response.data, false, null))
+  
+        }
+        //  console.log("oprator ",response.data)
+        //  dispatch(setOperator(response.data, false,null))
+  
+  
+      }).catch(error => {
+        dispatch(setCreateRegionManager(true, [], false, error))
+        console.log("error ", error.message)
+        // dispatch(setOperator([], false, error.message))
+  
+      });
+    }
+  }
+  
+
+      
+
+
+
+
+  
+
+// set create status of commission palne 
+export const setRegionEmployee = (regionEmployee, isLoading, error) => {
+    return {
+      type: GET_ALL_REGION_EMPLOYEE,
+  
+      regionEmployee: regionEmployee,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  export const fetchRegionEmployeeByRegion = () => {
+
+    return (dispatch) => {
+  
+  
+      dispatch(setRegionEmployee([], true, null))
+  
+      return axios.get(`http://${ip}:3333/api/region/getRegionEmployeeByRegionId`).
+        then(response => {
+  
+   
+          dispatch(setRegionEmployee(response.data, false, null))
+  
+  
+        }).catch(error => {
+          console.log(error)
+          alert(error)
+          dispatch(setRegionEmployee([], false, error.message))
+  
+        });
+    }
+  }
+  
+
+  
+
+
+
+
+  export const setCreateRegionEmployee = (success, nData, isLoading, error) => {
+    return {
+      type: CREATE_REGION_EMPLOYEE,
+      success: success,
+      nData: nData,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  
+  //  create operator 
+  export const createRegionEmployee = (firstName, lastName, email, password, userAddress) => {
+    let params = {
+        firstName: firstName,
+        lastName: lastName,
+
+        email: email,
+        password: password,
+        userAddress: userAddress
+    }
+    // console.log("passed value !!!! ", data)
+    return (dispatch) => {
+  
+  
+      dispatch(setCreateRegionEmployee(null, [], true, null))
+      console.log("dispacje omsdcsdncojdsnciods")
+      return axios.post(`http://${ip}:3333/api/nation/createRegionEmp`, params, {
+        // headers: { "Content-type": "multipart/form-data" }
+      }).then(response => {
+  
+        if (response.data.hasOwnProperty("error")) {
+          console.log(response.data.error)
+  
+          dispatch(setCreateRegionEmployee(false, [], false, response.data))
+        } else {
+          dispatch(setCreateRegionEmployee(true, response.data, false, null))
+  
+        }
+        //  console.log("oprator ",response.data)
+        //  dispatch(setOperator(response.data, false,null))
+  
+  
+      }).catch(error => {
+        dispatch(setCreateRegionEmployee(true, [], false, error))
+        console.log("error ", error.message)
+        // dispatch(setOperator([], false, error.message))
+  
+      });
+    }
+  }
+
+
+
+
+  
+  
+
+// set create status of commission palne 
+export const setZoneManager = (zoneManager, isLoading, error) => {
+    return {
+      type: GET_ZONE_MANAGER,
+  
+      zoneManager:zoneManager,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  export const fetchZoneManagere = () => {
+
+    return (dispatch) => {
+  
+  
+      dispatch(setZoneManager([], true, null))
+  
+      return axios.get(`http://${ip}:3333/api/region/getRegionEmployeeByRegionId`).
+        then(response => {
+  
+   
+          dispatch(setZoneManager(response.data, false, null))
+  
+  
+        }).catch(error => {
+          console.log(error)
+          alert(error)
+          dispatch(setZoneManager([], false, error.message))
+  
+        });
+    }
+  }
+  
+
+  
+
+  
+
+// set create status of commission palne 
+export const setRule = (rule, isLoading, error) => {
+    return {
+      type: GET_ALL_RULE,
+  
+      rule:rule,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  export const fetchRule = () => {
+
+    return (dispatch) => {
+  
+  
+      dispatch(setRule([], true, null))
+  
+      return axios.get(`http://${ip}:3333/api/rule/getAllRule`).
+        then(response => {
+  
+   
+          dispatch(setRule(response.data, false, null))
+  
+  
+        }).catch(error => {
+          console.log(error)
+          alert(error)
+          dispatch(setRule([], false, error.message))
+  
+        });
+    }
+  }
+  
+
+  
+
+
+
+
+  export const setCreateRule = (success, rData, isLoading, error) => {
+    return {
+      type: CREATE_RULE,
+      success: success,
+      rData: rData,
+      isLoading: isLoading,
+      error: error
+    }
+  }
+  
+  
+  //  create operator 
+  export const createRule= ( name,
+    description,
+    punishment,
+    remark) => {
+    let params = {
+        name,
+        description,
+        punishment,
+        remark
+    }
+    // console.log("passed value !!!! ", data)
+    return (dispatch) => {
+  
+  
+      dispatch(setCreateRule(null, [], true, null))
+      console.log("dispacje omsdcsdncojdsnciods")
+      return axios.post(`http://${ip}:3333/api/rule/createRule`, params, {
+        // headers: { "Content-type": "multipart/form-data" }
+      }).then(response => {
+  
+        if (response.data.hasOwnProperty("error")) {
+          console.log(response.data.error)
+  
+          dispatch(setCreateRule(false, [], false, response.data))
+        } else {
+          dispatch(setCreateRule(true, response.data, false, null))
+  
+        }
+        //  console.log("oprator ",response.data)
+        //  dispatch(setOperator(response.data, false,null))
+  
+  
+      }).catch(error => {
+        dispatch(setCreateRule(true, [], false, error))
+        console.log("error ", error.message)
+        // dispatch(setOperator([], false, error.message))
+  
+      });
+    }
+  }
+  
+
+

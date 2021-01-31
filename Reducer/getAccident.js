@@ -16,13 +16,7 @@ const getAccidnet = (state = intialState, action) => {
                 isLoading: action.isLoading,
                 error: action.error
             }
-        case GET_ACCIDENT:
-            return {
-                success: action.success,
-                rData: action.aData,
-                isLoading: action.isLoading,
-                error: action.error
-            }
+      
         default: return state;
     }
 }

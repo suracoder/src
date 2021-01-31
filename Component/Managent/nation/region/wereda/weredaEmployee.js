@@ -208,7 +208,7 @@ function ZoneEmpoyeeTable(props) {
                             size="small"
                             className={classes.button}
                             startIcon={<AccountBoxIcon />}
-                            component={Link} to={`/wereda/employee_profile/${row.id}`} 
+                            component={Link} to={`/wereda/employee_profile/${row.id}` } 
 
                           >
                             Profile

@@ -28,6 +28,7 @@ import { Grid, CardActionArea, Divider } from '@material-ui/core';
 import TestTable from "./TestTable"
 import Test from "./Test@"
 import Test3 from "./Test3"
+import AreaChart from "./AreaChart"
 import {
 
   BrowserRouter,
@@ -39,7 +40,8 @@ import {
   useHistory,
   useLocation
 } from "react-router-dom";
-
+import AccidnetMapDispaly from "./AccidentMapDisplay"
+import LinerChart from "./LinerChart"
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -66,13 +68,22 @@ const useStyles = makeStyles((theme) => ({
   const [open, setOpen] = React.useState(false);
   let { path, url } = useRouteMatch();
   
-
+  console.log("main acci ",props.getAccident.aData)
   return (
     <div>
       <Grid container >
        
         <Grid xs={12} md={12} sm={12} item>
         <TestTable/>
+        </Grid>
+        <Grid xs={12} md={12} sm={12} item style={{ position: 'relative', height: '60vh' }}>
+        <AccidnetMapDispaly/>
+        </Grid>
+        <Grid xs={12} md={12} sm={12} item>
+        <AreaChart data={props.getAccident.aData}/>
+        </Grid>
+        <Grid xs={12} md={12} sm={12} item>
+        <LinerChart data={props.getAccident.aData}/>
         </Grid>
      </Grid>
       

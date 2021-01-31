@@ -1,30 +1,85 @@
- import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import axios from "axios"
 
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
-import  Tabs from '@material-ui/core/Tabs';
+import Tabs from '@material-ui/core/Tabs';
 import Box from '@material-ui/core/Box'
 import HelpIcon from '../../../../icon/src/Help';
 import { makeStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import ContentR from "../../../Content"
+import Chat from "../../../chat"
+import { fetchRegionEmployeeByRegion, fetchRegion } from "../../../../Action/index"
+import { forwardRef } from 'react';
+import MaterialTable from "material-table"
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { useSnackbar } from 'notistack';
+import clsx from 'clsx';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+import { emphasize } from '@material-ui/core/styles';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Chip from '@material-ui/core/Chip';
+import HomeIcon from '@material-ui/icons/Home';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { Icon } from '@material-ui/core';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+import AddBox from '@material-ui/icons/AddBox';
 
-import {connect} from 'react-redux';
-import ContentR from "./Content"
- 
+
+import LockIcon from '@material-ui/icons/Lock';
+
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  Redirect,
+  useHistory,
+  useLocation
+} from "react-router-dom";
 const styles = (theme) => ({
-  root: {    flexGrow: 1  },
+  root: { flexGrow: 1 },
   paper: {
     padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    shape:0
+    shape: 0
 
   },
   searchBar: {
@@ -42,190 +97,245 @@ const styles = (theme) => ({
   contentWrapper: {
     margin: '40px 16px',
   },
-  paper: {    padding: theme.spacing(2),    textAlign: 'center',    color: theme.palette.text.secondary  }
-   ,
+  paper: { padding: theme.spacing(2), textAlign: 'center', color: theme.palette.text.secondary }
+  ,
   main: {
     flex: 1,
     padding: theme.spacing(6, 4),
     background: '#eaeff1',
   },
-   
+
 });
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
 
 
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+
+function Content(props) {
+  const [location, setLocation] = useState([])
+  const [user, setUser] = useState([])
+  const [open, setOpen] = React.useState(false);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [userId, setUserId] = useState(null)
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const tableIcons = {
+    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
   };
-}
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
-
- 
-function   Content(props)  {
-   
-  const classes = useStyles();
-  // const [value, setValue] = React.useState(0);
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleClickOpen = () => {
+    setOpen(true);
   };
-  console.log("minilik tikur sew",value)
-// Object.entries(mynewArray1[0]).forEach(entry => {
-//       console.log("polition ",value)
-//     })
-const mynewArray=[];
-    const mynewArray1=[];
-    
-  
 
-      for(var i in props.userPermission.permission.data){
-        
-        
-        
-         props.userPermission.permission.data[i].map((o)=>{
-      
-        
-        
-         mynewArray1.push(o)
-       
-        //  console.log("surafe",surafel)
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+
+  const deleteOperator = () => {
+    let data = {
+      userId: userId
+    }
+    setIsDeleteLoading(true)
+
+    axios.post(`http://localhost:3333/api/region/deleteRegionManager`, data).
+      then(response => {
+        console.log(response.data)
+        props.getAllRegionEmployeeAction();
+        enqueueSnackbar("Region Employee deleted successfuly", {
+          variant: 'error',
         })
-    }
-    
-    const findTodo =function(myTodo,role){
-      console.log("tato ", typeof myTodo[0])
-      
-      const index =myTodo.findIndex(function(todo,index){
-        return todo
-      })
-    }
-   
+        setIsDeleteLoading(false)
+        if (response.data.hasOwnProperty("error")) {
+          console.log("error ocure ", response.data)
+          setError(response.data)
+        }
 
+
+
+      }).catch(error => {
+        setIsDeleteLoading(false)
+
+      });
+  }
+
+
+
+  console.log("all nation props ", props.getAllNationEmployee)
+  const mynewArray1 = [];
+
+
+
+  for (var i in props.userPermission.permission.data) {
+
+
+
+    props.userPermission.permission.data[i].map((o) => {
+
+
+
+      mynewArray1.push(o)
+
+      //  console.log("surafe",surafel)
+    })
+  }
+
+  useEffect(() => {
+
+    props.getAllRegionEmployeeAction();
+    props.getRegionAction()
+
+  }, [])
+
+  // const [value, setValue] = React.useState(0);
+  console.log("region manager props=>>>>>>>>>>>>>>>>>>>>>>>", props.getAllRegionEmployee)
+  let tableData = []
+  
  
-    const Container = props => <Grid container {...props} />;
-  return (
-    <div>
-      <AppBar
-        component="div"
-        // className={classes.secondaryBar}
-         color="default"
-        position="static"
-     
-        elevation={0}
-      >
-        <Toolbar  
-         >
-          <Grid container alignItems="center" spacing={1} >
-            <Grid item xs>
-              <Typography color="inherit" variant="h5" component="h1">
-               
-                Region Employee
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Button className={classes.button} variant="outlined" color="inherit" size="small">
-                Web setup
-              </Button>
-            </Grid>
-            <Grid item>
-              <Tooltip title="Help">
-                <IconButton color="inherit">
-                  <HelpIcon />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+  props.getAllRegionEmployee.regionEmployee.map(i=>{
+    console.log(">?>?>?>?>?>?********",i.user)
+    tableData.push(i.user)
+  })
+
+    return (
+      <div>
+        <Grid container >
+          <Grid xs={12} md={6} sm={3} item>
+            {mynewArray1.map(i => {
+              if (i.roleName === "regionEmployee" && i.create)
+                return <Button variant="outlined" size="medium" color="primary" component={Link} to={`/region/createEmployee`}  >
+                  Create
+    </Button>
+
+
+
+            })}
           </Grid>
-        </Toolbar>
-      </AppBar>
-      
-        <AppBar
-        component="div"
-        className={classes.secondaryBar}
-        color="#eaeff1"
-        position="static"
-        elevation={0}
-      >
-        <Tabs value={0} textColor="inherit" onChange={handleChange} >
-       { mynewArray1.map(i=>{
-      if(i.roleName==="regionEmployee"&&i.create)
-      return  <Tab textColor="inherit" label="Create" {...a11yProps(0)} />
-     
-      
-   
-    })} 
-         { mynewArray1.map(i=>{
- if(i.roleName==="regionEmployee"&&i.delete)
- return <Tab textColor="inherit"   label="View"  {...a11yProps(1)}/>
-         })}
-    
-    { mynewArray1.map(i=>{
- if(i.roleName==="regionEmployee"&&i.update)
- return  <Tab textColor="inherit" label="Update" />
-         })}
-         { mynewArray1.map(i=>{
-    if(i.roleName==="regionEmployee"&&i.select){
-    return  <Tab textColor="inherit" label="View" {...a11yProps(4)}/>
-    }
-         })}
-         
-        </Tabs>
-     
-      </AppBar>
-    <div className={classes.main}>
-    { mynewArray1.map(i=>{
- if(i.roleName==="regionEmployee"&&i.create)
- return      <TabPanel value={value} index={0} >
- <ContentR/>
+          <Grid xs={12} md={12} sm={12} item>
+            <MaterialTable
+              icons={tableIcons}
+
+              title="User"
+              columns={[
+
+                { title: 'First Name', field: 'firstName' },
+                { title: 'First Name', field: 'lastName' },
+                { title: 'email', field: 'email' },
+                 
+
+                // { title: 'Avatar', field: 'imageUrl', render: rowData => <Chips data={rowData} /> },
+
+              ]}
+
+
+              data={tableData}
+              actions={[
+                {
+                  icon: 'save',
+                  tooltip: 'Save User',
+
+
+                  onClick: (event, rowData) => alert("You saved " + rowData.name)
+                },
+
+
+              ]}
+              components={{
+                Action: props => (
+
+                  <div>
+                    <IconButton aria-label="delete" component={Link} to={`/role/detail/${props.data.id}`} onClick={() => { console.log("i ckiced ") }} >
+                      <NavigateNextIcon fontSize="medium" />
+                  {/* Detail */}
+              </IconButton>
+
+                    <IconButton aria-label="delete" onClick={() => {
+                      console.log("clicke user data ", props.data)
+                      setUserId(props.data.id)
+                      handleClickOpen()
+                      // handleClickOpen()
+                    }} >
+                      {/* Delete */}
+              <DeleteIcon fontSize="medium" />
+                    </IconButton>
+                  </div>
+                ),
+              }}
+              options={{
+                actionsColumnIndex: -1,
+                filtering: true
+
+              }}
+            />
+          </Grid>
+
+          <Grid xs={12} md={6} sm={3} item>
+
+          </Grid>
+        </Grid>
+
+
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Do u Want to delete operator?"}</DialogTitle>
+          <DialogContent>
+
+            {error !== null ? enqueueSnackbar(error.error, {
+              variant: 'error',
+            }) : null}
+            <DialogContentText id="alert-dialog-description">
+              are u sure .
+          </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} disabled={isDeleteLoading ? true : false} color="primary">
+              Disagree
+          </Button>
+            <Button onClick={() => {
+              deleteOperator()
+              handleClose()
+            }} disabled={isDeleteLoading ? true : false} color="secondary" autoFocus>
+              Agree
+          </Button>
+          </DialogActions>
+        </Dialog>
+
+      </div>
+    );
+          }
  
-   </TabPanel>
-         })}
 
-      <TabPanel value={value} index={1}>
-      view
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-      delete
-      </TabPanel>
-    </div>
-    </div>
-  );
-}
 
-Content.propTypes = {
-  classes: PropTypes.object.isRequired,
- };
-const mapStateToProps=state=>({
-  userPermission:state.userPermission
+const mapStateToProps = state => ({
+  userPermission: state.userPermission,
+  realPermission: state.realPermission,
+  getAllRegionEmployee: state.getAllRegionEmployee,
+  getRegion:state.regionData
 })
-export default connect(mapStateToProps)(withStyles(styles )(Content));
+const mapDispatchToProps = dispatch => ({
+  getAllRegionEmployeeAction: () => dispatch(fetchRegionEmployeeByRegion()),
+  getRegionAction: () => dispatch(fetchRegion())
+
+
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Content)

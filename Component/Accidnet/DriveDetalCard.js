@@ -21,9 +21,9 @@ export default function ImgMediaCard(props) {
  let data={}
   props.data.map(i=>{
       data.full_name=i.driver_name;
-      data.age=i.drive_age;
+      data.age=i.age_of_driver;
       data.licence_no=i.driver_license_no;
-      data.sex=i.driver_sex;
+      data.sex=i.sex_of_driver;
       data.image=imge_ip+i.driver_license
   })
   console.log("imge ",imge_ip+data.image)

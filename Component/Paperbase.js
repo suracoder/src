@@ -45,6 +45,9 @@ import WeredaEmployeeProfile from './profile/WeredaEmployeeProfile/profile'
 import WeredaTrafficProfile from './profile/WeredaTrafficProfile/profile'
 import Accident from "../Component/Accidnet/AccidnetMain"
 import Profile from "./profile"
+import CreateNationEmployee from "../Component/Managent/nation/nationEmployee/createNationEmployee"
+import CreateRegionEmployee from "../Component/Managent/region/regionEmployee/createRegionEmployee"
+import CreateRule from "../Component/Rule/createRule"
 import {
   BrowserRouter,
   Switch,
@@ -55,7 +58,10 @@ import {
   useHistory,
   useLocation
 } from "react-router-dom";
+import MapfromRoute from "./MapForRoute"
 import EmployeeProfile from "./profile/WeredaEmployeeProfile/profile"
+import ZoneRegionCreate from "./Managent/nation/region/zone/zoneRegion/index"
+import Rule from "./Rule/index"
 const ENDPOINT = "http://192.168.1.15:3333";
 function Copyright() {
   return (
@@ -231,11 +237,15 @@ function Paperbase(props) {
   dispatch(fetchLiveTraffic())
   dispatch(fetchAccidnet())
   dispatch(fetchProfile())
+  socket.on('broadCastAccidentToWeb',function(data){
+    console.log("onBroadCast",data)
+ enqueueSnackbar("Accinet brodcated");
+  })
   socket.on('chatting', function (data) {
     console.log("@Chating emit ")
     enqueueSnackbar("new message");
 
-
+     
   })
   socket.on("update", () => {
     console.log("new user login ")
@@ -276,14 +286,25 @@ function Paperbase(props) {
 
               <Switch>
                 <Route exact path="/" render={() => { return <MyMap /> }} />
-                <Route path="/nation" render={() => {
+                ZoneRegionCreate
+                <Route exact path="/nation" render={() => {
 
                   return <NationEmpM />
+                }} />
+                <Route   path="/zone/zoneRegion" render={() => {
+
+                  return <ZoneRegionCreate />
                 }} />
                 <Route exact path="/region" render={() => {
 
                   return <Region />
                 }} />
+
+                <Route exact path="/region/createEmployee" render={() => {
+
+                  return <CreateRegionEmployee />
+                }} />
+
                 <Route path="/regionManager" render={() => {
 
                   return <RegionManag />
@@ -377,6 +398,19 @@ function Paperbase(props) {
 
                   return <Accident />
                 }} />
+                <Route path="/nation/createEmployee" render={() => {
+
+                  return <CreateNationEmployee />
+                }} />
+                <Route exact path="/rule" render={() => {
+
+return <Rule />
+
+}} />
+ <Route path="/rule/createRule" render={() => {
+
+return <CreateRule />
+}} />
               </Switch>
 
             </div>

@@ -154,7 +154,7 @@ export default function CollapsibleTable(props) {
   console.log(i)
 })
  myarray.map((o)=>{
-   console.log("name ",o[1].zoneManager.user.firstName)
+  //  console.log("name ",o[1].zoneManager.user.firstName)
 
    let a=createData( o[1].name,o[1].zoneManager.user.firstName, 6.0, 24, 4.0, 3.99,  {date: '2020-01-05', customerId: '11091700', amount: 3 } );
    let b=createData( o[1].name,o[1].zoneManager.user.firstName, o[1].weredas.length, 0, 0, 0);

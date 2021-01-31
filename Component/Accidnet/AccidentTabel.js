@@ -200,7 +200,7 @@ Row.propTypes = {
     let rows = [
        
     ];
-    console.log("normal array ",rows)
+    console.log("normal array ",props.getAccident)
  let i=[];
 //  i={...props.zones};
 //  let myarray=Object.entries(i);

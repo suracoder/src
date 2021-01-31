@@ -197,7 +197,7 @@ function Row(props) {
   let rows = [
        
 ];
-console.log("normal array ",rows)
+console.log("normal array ",props)
 let i=[];
 //  i={...props.zones};
 //  let myarray=Object.entries(i);

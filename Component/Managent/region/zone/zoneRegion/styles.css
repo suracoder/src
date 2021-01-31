@@ -1,0 +1,13 @@
+.App {
+    font-family: sans-serif;
+    text-align: center;
+    height: 100vh;
+  }
+  
+  .App-map {
+    height: 100%;
+    width: 100%;
+  }
+  .Poly:{
+      background-color: brown;
+  }

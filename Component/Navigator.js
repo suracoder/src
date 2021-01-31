@@ -30,7 +30,7 @@ import Collapse from '@material-ui/core/Collapse';
 import UserContext, {UserProvider } from "./PermissionContext"
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
-
+import axios from "axios"
 import { fetchRegionManager } from '../Action/index';
 import {
   BrowserRouter,
@@ -90,7 +90,11 @@ const styles = (theme) => ({
 
 class Navigator extends React.Component {
   state = { open: false };
-  state = {};
+  state = {
+    zoneName:'',
+    isZoneProfile:false
+  };
+
   handleClick = (e) => {
     // this.setState({ open: !this.state.open });
     this.setState({ [e]: !this.state[e] });
@@ -102,17 +106,41 @@ class Navigator extends React.Component {
     , fo: false
 
   }
+componentDidMount(){
+   
+  axios.get(`http://localhost:3333/api/zone/getUserZoneInfo`,{ headers: {"authorization" : `Bearer ${localStorage.getItem("token")}`} }).
+  then(response => {
+    console.log("register success",response.data)
 
+    response.data.map(i=>{
+      
+      this.setState({zoneName:i.name})
+      console.log(i)})
+    if(response.data.hasOwnProperty("error")){
+    // this.setState({error:"this not deleteed"})
+    console.log("register error")
+    }
+
+
+
+  }).catch(error => {
+    // this.setState({isDeleteLoading:false})
+
+  });
+}
   render() {
     const { classes, ...other } = this.props;
     const mynewArray = [];
     const mynewArray1 = [];
     const token = localStorage.getItem("token")
     const encoded = jwt.decode(token)
+    let zonePrf = new Set()
+    let rule =new Set()
 
 let image=null
 let name=null
 this.props.getProfile.profile.map(i=>{
+  console.log("alazar profile ",i)
 image=imge_ip+i.profile_picture
 name=i.firstName+"  "+i.lastName
 })
@@ -135,6 +163,8 @@ console.log('|||||||||||||||||||||||||||||||||||||||||',image)
         var user = o["roleName"].includes("user");
         var hospital = o["roleName"].includes("hospital");
         var accident = o["roleName"].includes("accident");
+        var zoneProfile = o["roleName"].includes("zoneProfile");
+        var rulePermisstion=o["roleName"].includes("Rule");
        
         if (nation) {
 
@@ -162,15 +192,25 @@ console.log('|||||||||||||||||||||||||||||||||||||||||',image)
    
           listArray.push("accident")
         }
+        if(zoneProfile){
+          zonePrf.add("zoneProfile")           // Set [ 1 ]
+
+          
+        }
+        if(rulePermisstion){
+          rule.add("rule")
+          // listArray.push("rule")
+        }
         mynewArray1.push(o)
         const surafel = Object.entries(o)
         //  console.log("surafe",surafel)
       })
     }
+
     let unique = [...new Set(listArray)];
-     
-  
-  console.log(this.props.getAccident.aData)
+     let zonePrfArry=[...zonePrf]
+  let rulePerfArray=[...rule]
+  console.log("||||||>>>>>>>??????>>>?>?  ",zonePrfArry)
 //  let image=imge_ip+thi
 
     return (
@@ -207,6 +247,13 @@ console.log('|||||||||||||||||||||||||||||||||||||||||',image)
             <List
               component="nav"
             >
+              {rulePerfArray[0]==="rule"&&(encoded.nid===1)?
+                    <List component="div" disablePadding>
+                          <ListItem button component={Link} to={"/" + "rule"} >
+                            <ListItemText className={clsx(classes.itemActiveItem)} primary="rule" />
+                          </ListItem>
+
+                        </List> : <div />}
               {unique.map(i => {
          console.log("NEw PERMISON STAGTE ",i)
                 return <div>
@@ -219,7 +266,7 @@ console.log('|||||||||||||||||||||||||||||||||||||||||',image)
                       onClick={this.handleClick.bind(this, i)}
                       className={clsx(classes.item, classes.itemActiveItem)}
                     >
-                      
+                       
                       <ListItemText
                         classes={{
                           primary: classes.itemPrimary,
@@ -230,6 +277,7 @@ console.log('|||||||||||||||||||||||||||||||||||||||||',image)
                       {this.state[i] ? <ExpandLess /> : <ExpandMore />}
                     </ListItem>
                     <Collapse in={this.state[i]} timeout="auto" unmountOnExit>
+                   
                       {i === "nation" && (encoded.nid === 1 || mynewArray1[0].create === true) ?
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i} >
@@ -285,7 +333,15 @@ console.log('|||||||||||||||||||||||||||||||||||||||||',image)
 
                         </List> : <div />
                       }
+                           {((i === "zone"&&encoded.userType === 5 || encoded.userType === 6)&&(zonePrfArry.includes("zoneProfile"))) ?
+                        <List component="div" disablePadding>
+                          <ListItem button component={Link} to={`/zone/${this.state.zoneName}` } >
+                            <ListItemText primary="zone Profile" className={clsx(classes.itemNeastedItem)} />
+                          </ListItem>
 
+                        </List> : <div />
+                      }
+                
                       {(i === "zone"&&encoded.userType === 5 || encoded.userType === 6) ?
                         <List component="div" disablePadding>
                           <ListItem button component={Link} to={"/" + i + "Employee"} >
@@ -347,11 +403,13 @@ x
                           <ListItem button component={Link} to={"/" + i} >
                             <ListItemText primary="Manage accidnet" className={clsx(classes.itemNeastedItem)} />
                           </ListItem>
-
+                          
                         </List> : <div />
-                      }
-                    </Collapse>
 
+                      }
+                     
+                    </Collapse>
+                    
                     <Divider className={classes.divider} />
 
                   </React.Fragment>

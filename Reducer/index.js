@@ -11,7 +11,7 @@ import weredaEmpReg from "./weredaEmployeeReg"
 import weredaTrafficReg from "./weredaTrafficReg"
 import zoneTrafficReg from "./zoneTrafficReg"
 import isValidate from "./emailValidate"
-import regionManager from "./regionManager"
+import getRegionManager from "./getRegionManager"
 import deletRegionManeger from "./deleteRegionManger"
 import regionData from "./getRegionInfo"
 import onlineUser from "./getonlineUser"
@@ -30,6 +30,14 @@ import weredaTraffic from './getWeredaTraffic'
  import getHospital from "./createHospital"
  import getAccident from "./getAccident"
  import getProfile from "./getProfile" 
+ import getAllNationEmployee from "./getAllNationEmployee"
+ import createNationEmployee from "./createNationEmployee"
+ import getAllRegionEmployee from "./getAllRegionEmployee"
+ import createRegionEmployee from "./createRegionEmployee"
+ import getZoneManager from "./getZoneManager"
+ import circle from "./circle"
+ import getAllRule from "./getAllRule"
+ import createRule from "./createRule"
 const reducers=combineReducers({
    usersign:userSignIn,
    deletRegionManeger:deletRegionManeger,
@@ -43,7 +51,7 @@ const reducers=combineReducers({
    zoneTrafficReg,
    weredaEmpReg,
    weredaTrafficReg,
-   regionManager,
+   getRegionManager,
    regionData,
    regionEmpReg,
    isValidate,
@@ -61,6 +69,14 @@ const reducers=combineReducers({
    liveTraffic,
    getHospital,
    getAccident,
-   getProfile
+   getProfile,
+   getAllNationEmployee,
+   createNationEmployee,
+   getAllRegionEmployee,
+   createRegionEmployee,
+   getZoneManager,
+   circle,
+   getAllRule,
+   createRule
 })
 export default reducers;

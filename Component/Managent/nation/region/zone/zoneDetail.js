@@ -15,7 +15,7 @@ import ManagerProfile from "./managerProfile"
 import { withRouter } from 'react-router-dom';
 import ZoneEmployeeTable from "./zoneEmployeeTable"
 import { fetchZoneEmployee,fetchZoneTraffic } from "../../../../../Action/index"
-
+import ZoneRegionDetail from "./ZoneRegionDetail"
 import { useSelector, useDispatch } from 'react-redux';
 import ZoneTrafficTable from "./zoneTrafficTable"
 // import Map from "../../../../map"
@@ -109,8 +109,11 @@ class ZoneDetail extends React.Component {
                     <Grid style={{ position: 'relative', height: '60vh' }} item xs={9} >
                         {/* <Map /> */}
                     </Grid>
-                    <Grid item xs={9} >
+                    <Grid item xs={6} >
                         <SurafelTable {...innerValue} />
+                    </Grid>
+                    <Grid item xs={3} >
+                        <ZoneRegionDetail />
                     </Grid>
                     <Grid item xs={3} >
                         <SurafelTable {...innerValue} />

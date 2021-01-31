@@ -27,8 +27,10 @@ import TechnicalDetail from "./TechinicalDetail"
 import CasulaDetail from "./CasualDeatil"
 // import AccidentChangeTree from "./AccidentChangeTree"
 import AccdientCricle from "./AccidentCircle"
-import Map from "./AccidnetDetailMap"
+// import Map from "./AccidnetDetailMap"
 import Editable from "./EditableTable"
+import Weather from "./WeatherDetail"
+import Map from "./Map"
 const styles = (theme) => ({
 
     paper: {
@@ -63,6 +65,8 @@ class ZoneDetail extends React.Component {
         let zoneData = []
         let innerValue = [];
         let zoneManager = ""
+        let lat=null
+        let lgn=null
         const data = [
             
               
@@ -70,16 +74,23 @@ class ZoneDetail extends React.Component {
            
           ];
         var foundValue = this.props.getAccident.aData.filter(obj => obj.id == id);
-        console.log("||||||||||||||||||||||||||| ",foundValue)
+        console.log("surafel found value ",foundValue)
+        let latLong={}
         foundValue.map(i=>{
-             
+            // lat=i.latitude
+            // lgn=i.longitude
+            latLong={
+                latitude:i.latitude,
+                longitude:i.longitude
+
+            }
             data.push({
                 type:"fatal injury",
                 value:i.fatal_injury
             },
             {
                 type:"slight injury",
-                value:i.slight_injury
+                value:i.slight__injury
             },
             {
                 type:"death injury",
@@ -95,7 +106,7 @@ class ZoneDetail extends React.Component {
         
          
         
-        console.log("found ", foundValue)
+        console.log("found ", data)
 
         return (
 
@@ -159,6 +170,7 @@ class ZoneDetail extends React.Component {
                     </Grid>
                     <Grid item xs={4} style={{ position: 'relative', height: '60vh' }}>
                     {/* <Map/> */}
+                    <DriveDetail data={foundValue} />
                      </Grid>
                     <Grid item xs={12} md={4} sm={6}  >
 <TechinicalDetail  data={foundValue}/>
@@ -169,9 +181,14 @@ class ZoneDetail extends React.Component {
                         {/* <ZoneTrafficTable /> */}
                         <CasulaDetail id={id}/>
                     </Grid>
-                    <Grid item xs={12} md={4} sm={6}  >
+                    <Grid item xs={12} md={8} sm={6}  >
+                        {/* <ZoneTrafficTable /> */}
+                        <Weather data={foundValue}/>
+                    </Grid>
+                    <Grid style={{ position: 'relative', height: '60vh' }} item xs={4} >
                         {/* <ZoneTrafficTable /> */}
                         {/* <AccdientCricle /> */}
+                        <Map latLng={latLong}/>
                     </Grid>
                     <Grid item xs={12} md={12} sm={6}  >
                         {/* <ZoneTrafficTable /> */}
